@@ -15,7 +15,7 @@ app.get("/api", (req, res) => {
 });
 
 // Get all the quips
-app.get("/package-lock.jsonapi/quips", (request, response) => {
+app.get("/api/quips", (request, response) => {
 	const data = { quips };
 	response.json(data);
 });
