@@ -1,54 +1,51 @@
-// const express = require("express");
-// const cors = require("cors");
-// const app = express();
-// const { generateBadgeUrl } = require("./shields");
-// const quips = require("./quips");
-// const axios = require("axios");
-// app.use(cors());
+// const quips = require("./quips.json");
+// const { CONSTANTS, getRandomArrayElement } = require("./utils");
+// const { quipCard } = require("./renderQuipsCard");
+// const themes = require("./themes.json");
 
-// // Get all the data
-// app.get("/quips", (request, response) => {
-// 	const data = { quips };
-// 	response.json(data);
-// });
+// // Max cache age (Currently = 60 seconds)
+// const cacheSeconds = CONSTANTS.TEN_SECONDS;
 
-// // Get one random data
-// app.get("/quips/random", (request, response) => {
-// 	const randomQuip = quips[Math.floor(Math.random() * quips.length)];
-// 	response.json(randomQuip);
+// module.exports = async (req, res) => {
+// 	const index = Math.floor(Math.random() * Object.keys(quips).length);
+// 	//const index = 168
+// 	let renderQuip = "";
 
-// 		// axios
-// 		// 	.get(
-// 		// 		"https://readme-code-quips-production.up.railway.app/quips/random"
-// 		// 	)
-// 		// 	.then((response) => {
-// 		// 		response.send(response.data);
-// 		// 		console.log("success");
-// 		// 	})
-// 		// 	.catch((error) => {
-// 		// 		console.error(error);
-// 		// 		response.send({ error: "Unable to get quip." });
-// 		// 	});
-// });
+// 	let {
+// 		borderColor,
+// 		textColor,
+// 		bgColor,
+// 		codeColor,
+// 		quoteColor,
+// 		theme,
+// 		hideBorder,
+// 	} = req.query;
 
+// 	theme = theme ? theme.toLowerCase() : theme;
 
-// // app.get("/badge", (req, res) => {
-// // 	generateBadgeUrl()
-// // 		.then((url) => {
-// // 			res.redirect(url);
-// // 		})
-// // 		.catch((error) => {
-// // 			console.error(error);
-// // 			res.redirect(
-// // 				`https://img.shields.io/badge/Quip-${encodeURIComponent(
-// // 					"Error"
-// // 				)}-red`
-// // 			);
-// // 		});
-// // });
+// 	if (theme === "random") theme = getRandomArrayElement(Object.keys(themes));
 
-// const PORT = process.env.PORT || 3000; // Use environment variable or port 3000 as default
+// 	if (!themes[theme]) theme = "default";
+// 	const colorTheme = themes[theme];
+// 	borderColor = borderColor || colorTheme.borderColor;
+// 	bgColor = bgColor || colorTheme.bgColor;
+// 	quoteColor = quoteColor || colorTheme.quoteColor;
+// 	codeColor = codeColor || colorTheme.codeColor;
 
-// app.listen(PORT, () => {
-// 	console.log(`Server listening on port ${PORT}`);
-// });
+// 	let quip = quips[index].quip;
+
+// 	renderQuip = quipsCard(
+// 		textColor || "#ffca3a",
+// 		bgColor || "#242423",
+// 		borderColor || "#8ac926",
+// 		codeColor || "#f72585",
+// 		quip,
+// 		hideBorder
+// 	);
+
+// 	// Sets the type of content sent
+// 	res.setHeader("Content-Type", "image/svg+xml");
+// 	// Set the Cache type to public (Any cache can store the data) and the max-age
+// 	res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
+// 	res.send(renderQuip);
+// };
