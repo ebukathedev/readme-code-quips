@@ -6,42 +6,16 @@ const quips = require("./quips.json");
 const axios = require("axios");
 app.use(cors());
 
-// Get all the data
+// Get all the quips
 app.get("/quips", (request, response) => {
 	const data = { quips };
 	response.json(data);
 });
 
-// Get one random data
+// Get only one random quip
 app.get("/quips/random", (request, response) => {
 	const randomQuip = quips[Math.floor(Math.random() * quips.length)];
 	response.json(randomQuip);
-
-	axios
-		.get("https://readme-code-quips-production.up.railway.app/quips/random")
-		.then((response) => {
-			response.send(response.data);
-			console.log("success");
-		})
-		.catch((error) => {
-			console.error(error);
-			response.send({ error: "Unable to get quip." });
-		});
-});
-
-app.get("/badge", (req, res) => {
-	generateBadgeUrl()
-		.then((url) => {
-			res.redirect(url);
-		})
-		.catch((error) => {
-			console.error(error);
-			res.redirect(
-				`https://img.shields.io/badge/Quip-${encodeURIComponent(
-					"Error"
-				)}-red`
-			);
-		});
 });
 
 const PORT = process.env.PORT || 3000; // Use environment variable or port 3000 as default
